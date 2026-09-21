@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Log In — LinkedIn AI Profile Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card auth-card p-4 p-md-5">
+        <h2 class="fw-bold mb-1">Welcome Back</h2>
+        <p class="text-muted mb-4">Log in to see your past analysis reports. An account is optional &mdash; you can still <a href="{{ url_for('analyze') }}">run an analysis without one</a>.</p>
+
+        <form method="POST" action="{{ url_for('login') }}">
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required autofocus>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Log In</button>
+        </form>
+
+        <p class="text-muted small text-center mt-4 mb-0">
+          Don't have an account? <a href="{{ url_for('register') }}">Sign up</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

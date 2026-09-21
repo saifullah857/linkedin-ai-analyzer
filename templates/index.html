@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}LinkedIn AI Profile Analyzer — Score & Improve Your Profile{% endblock %}
+
+{% block content %}
+<section class="hero py-5">
+  <div class="container py-5 text-center">
+    <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis mb-3 px-3 py-2">
+      <i class="bi bi-stars"></i> Multi-Agent AI Analysis
+    </span>
+    <h1 class="display-4 fw-bold mb-3">
+      Know Exactly What's Holding<br class="d-none d-md-block"> Your LinkedIn Profile Back
+    </h1>
+    <p class="lead text-muted col-lg-8 mx-auto mb-4">
+      Upload your resume, share your public LinkedIn details, and let a team of
+      specialized AI agents score your profile, compare it against your resume,
+      and hand you a prioritized action plan &mdash; recruiter-eye-view included.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg px-4">
+        <i class="bi bi-magic"></i> Analyze My Profile
+      </a>
+      <a href="#how-it-works" class="btn btn-outline-light btn-lg px-4">See How It Works</a>
+    </div>
+    <p class="small text-muted mt-3">
+      <i class="bi bi-key"></i> Bring your own free Groq API key &mdash; we never see or store it.
+    </p>
+  </div>
+</section>
+
+<section id="features" class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">One Upload. Nine AI Agents. A Complete Career Report.</h2>
+    <div class="row g-4">
+      {% set features = [
+        ("bi-person-badge", "Profile Analysis Agent", "Scores your headline, about, experience, skills, and SEO out of 100."),
+        ("bi-file-earmark-text", "Resume Analysis Agent", "Checks ATS compatibility, grammar, formatting, and bullet-point strength."),
+        ("bi-arrow-left-right", "Resume vs LinkedIn Compare", "Finds missing skills, mismatched dates, and inconsistent experience."),
+        ("bi-robot", "ATS Optimization Agent", "Surfaces missing and weak keywords recruiters' filters look for."),
+        ("bi-person-check", "Recruiter Simulation Agent", "Gives you an honest 'would I interview this candidate' verdict."),
+        ("bi-signpost-2", "Career Advisor Agent", "Suggests roles, certifications, and a roadmap tailored to your gaps."),
+      ] %}
+      {% for icon, title, desc in features %}
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card h-100 p-4 rounded-4">
+          <div class="feature-icon mb-3"><i class="bi {{ icon }}"></i></div>
+          <h5 class="fw-semibold">{{ title }}</h5>
+          <p class="text-muted mb-0 small">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section id="how-it-works" class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5">How It Works</h2>
+    <div class="row g-4 text-center">
+      {% set steps = [
+        ("1", "Upload & Connect", "Upload your resume PDF, paste your LinkedIn public info, and enter your own Groq API key."),
+        ("2", "Agents Analyze", "Nine specialized AI agents extract, score, and cross-check your resume and profile."),
+        ("3", "Get Your Report", "Receive score cards, gap analysis, and a prioritized action plan &mdash; downloadable as PDF."),
+      ] %}
+      {% for num, title, desc in steps %}
+      <div class="col-md-4">
+        <div class="step-circle mx-auto mb-3">{{ num }}</div>
+        <h5 class="fw-semibold">{{ title }}</h5>
+        <p class="text-muted small">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('analyze') }}" class="btn btn-primary btn-lg px-4">Get Started Free</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

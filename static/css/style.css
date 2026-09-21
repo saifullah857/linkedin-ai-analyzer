@@ -1,0 +1,171 @@
+/* static/css/style.css
+   Dark theme, navy background + blue accent, per project spec. */
+
+:root {
+  --bg: #0a1220;
+  --bg-elevated: #111b2e;
+  --bg-card: #14203a;
+  --border: #22304a;
+  --text: #e8edf5;
+  --text-muted: #93a0b6;
+  --accent: #2f7cf6;
+  --accent-strong: #5c9bff;
+  --success: #2ecf82;
+  --warning: #f5b942;
+  --danger: #f0556c;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+a { color: var(--accent-strong); }
+a:hover { color: var(--accent); }
+
+.text-muted { color: var(--text-muted) !important; }
+
+/* --- Navbar --- */
+.app-navbar {
+  background-color: rgba(10, 18, 32, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.app-navbar .nav-link { color: var(--text-muted); }
+.app-navbar .nav-link:hover { color: var(--text); }
+
+/* --- Footer --- */
+.app-footer {
+  border-top: 1px solid var(--border);
+  background-color: var(--bg-elevated);
+}
+
+/* --- Buttons --- */
+.btn-primary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+.btn-primary:hover, .btn-primary:focus {
+  background-color: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+.btn-outline-light {
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-outline-light:hover {
+  background-color: var(--bg-elevated);
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+/* --- Hero --- */
+.hero {
+  background: radial-gradient(ellipse at top, rgba(47, 124, 246, 0.15), transparent 60%);
+}
+
+/* --- Feature cards --- */
+.feature-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.feature-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+.feature-icon {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background-color: rgba(47, 124, 246, 0.15);
+  color: var(--accent-strong);
+  font-size: 1.3rem;
+}
+
+/* --- How-it-works step circles --- */
+.step-circle {
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+/* --- Forms --- */
+.form-card, .score-card, .auth-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+.form-control, .form-select {
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.form-control:focus, .form-select:focus {
+  background-color: var(--bg-elevated);
+  color: var(--text);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem rgba(47, 124, 246, 0.25);
+}
+.form-control::placeholder { color: #5c6a82; }
+
+/* --- Progress bars --- */
+.progress { background-color: var(--bg-elevated); }
+.progress-bar { background-color: var(--accent); }
+
+/* --- Overall score ring --- */
+.overall-score-ring {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: conic-gradient(var(--accent) 0deg, var(--accent) calc(var(--score, 75) * 3.6deg), var(--bg-elevated) 0deg);
+  position: relative;
+}
+.overall-score-ring::before {
+  content: "";
+  position: absolute;
+  width: 112px; height: 112px;
+  border-radius: 50%;
+  background-color: var(--bg);
+}
+.overall-score-ring span {
+  position: relative;
+  font-size: 2.2rem;
+  font-weight: 800;
+  z-index: 1;
+}
+.overall-score-ring small {
+  position: relative;
+  z-index: 1;
+  margin-left: 2px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* --- Score cards --- */
+.score-card { }
+.score-card h5 i { margin-right: 4px; }
+
+/* --- Badges / verdict pills --- */
+.verdict-pill {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.verdict-strong-yes, .verdict-yes { background-color: rgba(46, 207, 130, 0.18); color: var(--success); }
+.verdict-maybe { background-color: rgba(245, 185, 66, 0.18); color: var(--warning); }
+.verdict-no { background-color: rgba(240, 85, 108, 0.18); color: var(--danger); }
+
+/* --- Dashboard table --- */
+.table-dark-custom {
+  --bs-table-bg: var(--bg-card);
+  --bs-table-color: var(--text);
+  --bs-table-border-color: var(--border);
+}

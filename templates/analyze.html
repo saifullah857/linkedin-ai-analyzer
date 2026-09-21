@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Run Analysis — LinkedIn AI Profile Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card form-card p-4 p-md-5">
+        <h2 class="fw-bold mb-1">Start Your Analysis</h2>
+        <p class="text-muted mb-4">Takes about 60-90 seconds. Nothing is stored except your final report.</p>
+
+        <form method="POST" action="{{ url_for('analyze') }}" enctype="multipart/form-data" id="analyzeForm">
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold"><i class="bi bi-key text-primary"></i> Your Groq API Key</label>
+            <input type="password" class="form-control" name="groq_api_key" placeholder="gsk_..." required>
+            <div class="form-text">
+              Used only for this session, never saved. Get a free key at
+              <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>.
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold"><i class="bi bi-linkedin text-primary"></i> LinkedIn Profile URL</label>
+            <input type="url" class="form-control" name="linkedin_url" placeholder="https://linkedin.com/in/your-name" required>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold"><i class="bi bi-file-earmark-pdf text-primary"></i> Resume (PDF)</label>
+            <input type="file" class="form-control" name="resume" accept="application/pdf" required>
+          </div>
+
+          <hr class="my-4">
+          <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle"></i> Paste your public LinkedIn content below (we don't scrape LinkedIn).
+          </p>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Headline</label>
+              <input type="text" class="form-control" name="li_headline" placeholder="e.g. AI/ML Engineer | GenAI | RAG">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Skills (comma-separated)</label>
+              <input type="text" class="form-control" name="li_skills" placeholder="Python, LangChain, Flask...">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">About</label>
+            <textarea class="form-control" name="li_about" rows="3" placeholder="Paste your LinkedIn About section"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Experience</label>
+            <textarea class="form-control" name="li_experience" rows="3" placeholder="Paste your LinkedIn Experience section"></textarea>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label class="form-label">Education</label>
+              <textarea class="form-control" name="li_education" rows="2"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Projects</label>
+              <textarea class="form-control" name="li_projects" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Certifications</label>
+            <textarea class="form-control" name="li_certifications" rows="2" placeholder="e.g. AWS Certified ML – Specialty, 2024"></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold"><i class="bi bi-signpost-2 text-primary"></i> Target Role <span class="text-muted fw-normal">(optional)</span></label>
+            <input type="text" class="form-control" name="target_role" placeholder="e.g. GenAI Engineer, ML Engineer">
+            <div class="form-text">Helps the ATS and Career Advisor agents tailor keyword and role suggestions.</div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold"><i class="bi bi-chat-square-text text-primary"></i> Public Posts <span class="text-muted fw-normal">(optional)</span></label>
+            <textarea class="form-control" name="posts" rows="4" placeholder="Paste up to a few of your public LinkedIn posts, separated by a blank line, for the Content Analyzer Agent."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+            <i class="bi bi-magic"></i> Run AI Analysis
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.getElementById('analyzeForm').addEventListener('submit', function () {
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Agents are analyzing your profile...';
+  });
+</script>
+{% endblock %}

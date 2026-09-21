@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% block title %}Your Analysis Report — LinkedIn AI Profile Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="text-center mb-4">
+    <p class="text-muted mb-1">Overall Score</p>
+    <div class="overall-score-ring mx-auto mb-2" data-score="{{ report.overall_score }}">
+      <span>{{ report.overall_score }}</span><small>/100</small>
+    </div>
+    <p class="text-muted small mb-3">Analysis ID: {{ report.analysis_id }}</p>
+    <a href="{{ url_for('download_report_pdf', analysis_id=report.analysis_id) }}" class="btn btn-outline-light btn-sm">
+      <i class="bi bi-file-earmark-arrow-down"></i> Download PDF Report
+    </a>
+  </div>
+
+  {% set fr = report.final_report %}
+  {% if fr and not fr.error %}
+  <div class="card score-card p-4 mb-4">
+    {% if fr.one_line_verdict %}<p class="fw-semibold mb-3">"{{ fr.one_line_verdict }}"</p>{% endif %}
+    {% if fr.executive_summary %}<p class="text-muted small mb-3">{{ fr.executive_summary }}</p>{% endif %}
+    <div class="row g-4">
+      {% if fr.key_strengths %}
+      <div class="col-md-4">
+        <p class="fw-semibold small mb-2"><i class="bi bi-check-circle text-success"></i> Key Strengths</p>
+        <ul class="small text-muted mb-0">{% for s in fr.key_strengths %}<li>{{ s }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {% if fr.key_gaps %}
+      <div class="col-md-4">
+        <p class="fw-semibold small mb-2"><i class="bi bi-exclamation-triangle text-warning"></i> Key Gaps</p>
+        <ul class="small text-muted mb-0">{% for g in fr.key_gaps %}<li>{{ g }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+      {% if fr.top_priority_actions %}
+      <div class="col-md-4">
+        <p class="fw-semibold small mb-2"><i class="bi bi-lightning text-primary"></i> Top Priority Actions</p>
+        <ul class="small text-muted mb-0">{% for a in fr.top_priority_actions %}<li>{{ a }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card score-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-person-badge text-primary"></i> Profile Analysis</h5>
+        {% set p = report.profile_analysis %}
+        {% if p and not p.error %}
+          {% for key, label in [
+            ("headline_score","Headline"), ("about_score","About"),
+            ("experience_score","Experience"), ("projects_score","Projects"),
+            ("skills_score","Skills"), ("seo_score","SEO"),
+            ("recruiter_friendliness_score","Recruiter Friendliness")
+          ] %}
+          <div class="mb-2">
+            <div class="d-flex justify-content-between small mb-1">
+              <span>{{ label }}</span><span>{{ p.get(key, 0) }}/100</span>
+            </div>
+            <div class="progress" style="height:6px;">
+              <div class="progress-bar" style="width:{{ p.get(key, 0) }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+          {% if p.top_recommendations %}
+          <hr>
+          <p class="fw-semibold small mb-2">Top Recommendations</p>
+          <ul class="small text-muted">
+            {% for r in p.top_recommendations %}<li>{{ r }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+        {% else %}
+          <p class="text-muted small">Profile analysis unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card score-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-text text-primary"></i> Resume Analysis</h5>
+        {% set r = report.resume_analysis %}
+        {% if r and not r.error %}
+          {% for key, label in [
+            ("ats_compatibility_score","ATS Compatibility"), ("formatting_score","Formatting"),
+            ("grammar_score","Grammar"), ("keyword_score","Keywords"),
+            ("professionalism_score","Professionalism")
+          ] %}
+          <div class="mb-2">
+            <div class="d-flex justify-content-between small mb-1">
+              <span>{{ label }}</span><span>{{ r.get(key, 0) }}/100</span>
+            </div>
+            <div class="progress" style="height:6px;">
+              <div class="progress-bar bg-success" style="width:{{ r.get(key, 0) }}%"></div>
+            </div>
+          </div>
+          {% endfor %}
+          {% if r.recommendations %}
+          <hr>
+          <p class="fw-semibold small mb-2">Top Recommendations</p>
+          <ul class="small text-muted">
+            {% for rec in r.recommendations %}<li>{{ rec }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+        {% else %}
+          <p class="text-muted small">Resume analysis unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if report.resume_analysis and report.resume_analysis.weak_bullet_points %}
+  <div class="card score-card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-exclamation-triangle text-warning"></i> Weak Bullet Points to Fix</h5>
+    <ul class="small text-muted mb-0">
+      {% for b in report.resume_analysis.weak_bullet_points %}<li>{{ b }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card score-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-robot text-primary"></i> ATS Agent</h5>
+        {% set a = report.ats %}
+        {% if a and not a.error %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between small mb-1"><span>ATS Score</span><span>{{ a.get("ats_score", 0) }}/100</span></div>
+            <div class="progress" style="height:6px;"><div class="progress-bar" style="width:{{ a.get('ats_score', 0) }}%"></div></div>
+          </div>
+          {% if a.missing_keywords %}
+          <p class="fw-semibold small mb-1">Missing Keywords</p>
+          <p class="small text-muted mb-3">{{ a.missing_keywords | join(", ") }}</p>
+          {% endif %}
+          {% if a.action_plan %}
+          <p class="fw-semibold small mb-2">Action Plan</p>
+          <ol class="small text-muted mb-0">{% for step in a.action_plan %}<li>{{ step }}</li>{% endfor %}</ol>
+          {% endif %}
+        {% else %}
+          <p class="text-muted small">ATS analysis unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card score-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-person-check text-primary"></i> Recruiter Agent</h5>
+        {% set rec = report.recruiter %}
+        {% if rec and not rec.error %}
+          {% set verdict_class = {
+            "Strong Yes": "verdict-strong-yes", "Yes": "verdict-yes",
+            "Maybe": "verdict-maybe", "No": "verdict-no"
+          } %}
+          <span class="verdict-pill {{ verdict_class.get(rec.get('final_recommendation'), 'verdict-maybe') }} mb-3 d-inline-block">
+            {{ rec.get("final_recommendation", "N/A") }}
+          </span>
+          <p class="small text-muted mb-3">{{ rec.get("final_recommendation_reason", "") }}</p>
+          <div class="row g-2 mb-3 text-center">
+            <div class="col-4"><div class="small text-muted">Technical</div><div class="fw-bold">{{ rec.get("technical_rating", 0) }}</div></div>
+            <div class="col-4"><div class="small text-muted">Communication</div><div class="fw-bold">{{ rec.get("communication_rating", 0) }}</div></div>
+            <div class="col-4"><div class="small text-muted">Portfolio</div><div class="fw-bold">{{ rec.get("portfolio_rating", 0) }}</div></div>
+          </div>
+          {% if rec.pros %}
+          <p class="fw-semibold small mb-1">Pros</p>
+          <ul class="small text-muted mb-2">{% for pr in rec.pros %}<li>{{ pr }}</li>{% endfor %}</ul>
+          {% endif %}
+          {% if rec.cons %}
+          <p class="fw-semibold small mb-1">Cons</p>
+          <ul class="small text-muted mb-0">{% for c in rec.cons %}<li>{{ c }}</li>{% endfor %}</ul>
+          {% endif %}
+        {% else %}
+          <p class="text-muted small">Recruiter analysis unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card score-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-arrow-left-right text-primary"></i> Resume vs LinkedIn</h5>
+        {% set c = report.comparison %}
+        {% if c and not c.error %}
+          <p class="small mb-2"><strong>{{ c.get("skills_overlap_percent", 0) }}%</strong> skills overlap</p>
+          {% if c.skills_missing_from_linkedin %}
+          <p class="fw-semibold small mb-1">Missing from LinkedIn</p>
+          <p class="small text-muted mb-2">{{ c.skills_missing_from_linkedin | join(", ") }}</p>
+          {% endif %}
+          {% if c.skills_missing_from_resume %}
+          <p class="fw-semibold small mb-1">Missing from Resume</p>
+          <p class="small text-muted mb-2">{{ c.skills_missing_from_resume | join(", ") }}</p>
+          {% endif %}
+          {% if c.different_dates %}
+          <p class="fw-semibold small mb-1">Date Mismatches</p>
+          <ul class="small text-muted mb-0">
+            {% for d in c.different_dates %}<li>{{ d.item }}: resume "{{ d.resume_dates }}" vs LinkedIn "{{ d.linkedin_dates }}"</li>{% endfor %}
+          </ul>
+          {% endif %}
+        {% else %}
+          <p class="text-muted small">Comparison unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card score-card p-4 h-100">
+        <h5 class="fw-bold mb-3"><i class="bi bi-key text-primary"></i> Keyword Optimizer</h5>
+        {% set k = report.keywords %}
+        {% if k and not k.error %}
+          {% if k.top_keywords_to_add %}
+          <p class="fw-semibold small mb-2">Top Keywords to Add</p>
+          <div class="mb-0">
+            {% for kw in k.top_keywords_to_add %}<span class="badge bg-primary-subtle text-primary-emphasis me-1 mb-1">{{ kw }}</span>{% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted small">No keyword gaps identified.</p>
+          {% endif %}
+        {% else %}
+          <p class="text-muted small">Keyword analysis unavailable.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card score-card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-signpost-2 text-primary"></i> Career Roadmap</h5>
+    {% set ca = report.career_advice %}
+    {% if ca and not ca.error %}
+      {% if ca.best_career_path %}<p class="small text-muted mb-3">{{ ca.best_career_path }}</p>{% endif %}
+      <div class="row g-4">
+        {% if ca.missing_skills %}
+        <div class="col-md-4">
+          <p class="fw-semibold small mb-2">Skills to Learn</p>
+          <ul class="small text-muted mb-0">{% for s in ca.missing_skills %}<li>{{ s }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+        {% if ca.projects_to_build %}
+        <div class="col-md-4">
+          <p class="fw-semibold small mb-2">Projects to Build</p>
+          <ul class="small text-muted mb-0">{% for pr in ca.projects_to_build %}<li>{{ pr }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+        {% if ca.target_job_roles %}
+        <div class="col-md-4">
+          <p class="fw-semibold small mb-2">Target Roles</p>
+          <ul class="small text-muted mb-0">{% for role in ca.target_job_roles %}<li>{{ role }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+      </div>
+      {% if ca.roadmap %}
+      <hr>
+      <div class="row g-3">
+        {% for stage in ca.roadmap %}
+        <div class="col-md-3">
+          <p class="fw-semibold small mb-1">{{ stage.timeframe }}</p>
+          <p class="small text-muted mb-0">{{ stage.focus }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if ca.salary_estimation_note %}
+      <hr>
+      <p class="small text-muted mb-0"><i class="bi bi-cash-coin"></i> {{ ca.salary_estimation_note }}</p>
+      {% endif %}
+    {% else %}
+      <p class="text-muted small">Career analysis unavailable.</p>
+    {% endif %}
+  </div>
+
+  {% set content = report.content_analysis %}
+  {% if content and content.posts %}
+  <div class="card score-card p-4 mb-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-chat-square-text text-primary"></i> Post Analyzer</h5>
+    {% for post in content.posts %}
+    <div class="p-3 mb-3 rounded-3" style="background-color: var(--bg-elevated);">
+      <p class="small text-muted mb-2">"{{ post.post_excerpt }}"</p>
+      <div class="d-flex flex-wrap gap-3 small mb-2">
+        <span>Engagement: <strong>{{ post.engagement_prediction }}</strong></span>
+        <span>Professional: <strong>{{ post.professional_score }}/100</strong></span>
+        <span>Readability: <strong>{{ post.readability_score }}/100</strong></span>
+      </div>
+      {% if post.improved_version %}
+      <p class="fw-semibold small mb-1">Improved Version</p>
+      <p class="small text-muted mb-0">{{ post.improved_version }}</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="text-center">
+    <a href="{{ url_for('analyze') }}" class="btn btn-outline-light"><i class="bi bi-arrow-repeat"></i> Run Another Analysis</a>
+  </div>
+</div>
+{% endblock %}

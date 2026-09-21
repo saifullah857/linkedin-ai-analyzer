@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — LinkedIn AI Profile Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card auth-card p-4 p-md-5">
+        <h2 class="fw-bold mb-1">Create an Account</h2>
+        <p class="text-muted mb-4">Optional, and free. Save your report history across visits. Your Groq API key is never part of your account &mdash; it stays session-only.</p>
+
+        <form method="POST" action="{{ url_for('register') }}">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="name" required autofocus>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" minlength="8" required>
+            <div class="form-text">At least 8 characters.</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+        </form>
+
+        <p class="text-muted small text-center mt-4 mb-0">
+          Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

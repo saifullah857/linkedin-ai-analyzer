@@ -1,0 +1,28 @@
+Flask==3.0.3
+Flask-WTF==1.2.1
+Flask-Session==0.8.0
+Flask-Limiter==3.8.0
+Flask-Login==0.6.3
+Flask-SQLAlchemy==3.1.1
+python-dotenv==1.0.1
+pydantic==2.9.2
+# NOTE: agno 0.4.5 (originally pinned in Chapter 1) was removed from PyPI.
+# 2.8.7 is the latest stable release and was verified to keep the same
+# Agent / Toolkit / agno.models.groq.Groq API surface this project uses.
+agno==2.8.7
+# NOTE: groq 0.11.0 (originally pinned) passes `proxies=` to httpx.Client(),
+# an argument httpx removed in 0.28. Any environment that resolves a modern
+# httpx (which agno's other deps pull in) hits:
+#   "Client.__init__() got an unexpected keyword argument 'proxies'"
+# on every single agent call. 1.6.0 is the current SDK and doesn't use the
+# removed argument -- verified against agno.models.groq.Groq directly.
+groq==1.6.0
+PyMuPDF==1.24.10
+pdfplumber==0.11.4
+sentence-transformers==3.1.1
+chromadb==0.5.5
+SQLAlchemy==2.0.35
+gunicorn==23.0.0
+Werkzeug==3.0.4
+reportlab==4.2.5
+requests==2.32.3
