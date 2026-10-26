@@ -37,21 +37,29 @@ class RecommendationTool(Toolkit):
         ]
         return sorted(weak, key=lambda x: x["score"])
 
-    def merge_recommendations(self, *recommendation_lists) -> list:
-        """Merge multiple agents' recommendation lists, de-duplicating
-        near-identical entries (case-insensitive exact match) while
-        preserving the first-seen order (earlier lists take priority).
+    def merge_recommendations(self, recommendation_lists: list) -> list:
+        """Merge several recommendation lists into one de-duplicated list.
+
+        Near-identical entries (case-insensitive exact match) are dropped
+        while first-seen order is preserved (earlier lists win).
+
+        NOTE: the parameter is a single list-of-lists, NOT *varargs.
+        Varargs produce a JSON schema that LLM function-calling (Groq)
+        rejects with ``tool_use_failed``, which is exactly what broke
+        the Report Generator Agent.
 
         Args:
-            *recommendation_lists: any number of list[str] arguments.
+            recommendation_lists: e.g. [["a", "b"], ["b", "c"]]. A flat
+                list of strings is also accepted.
 
         Returns:
             A single de-duplicated list[str].
         """
         seen = set()
         merged = []
-        for lst in recommendation_lists:
-            for item in lst or []:
+        for lst in recommendation_lists or []:
+            items = [lst] if isinstance(lst, str) else (lst or [])
+            for item in items:
                 key = str(item).strip().lower()
                 if key and key not in seen:
                     seen.add(key)

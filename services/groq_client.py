@@ -41,7 +41,30 @@ def get_groq_model(api_key: str | None, model_id: str | None = None):
         )
 
     resolved_model_id = model_id or current_app.config.get(
-        "GROQ_MODEL", "llama-3.3-70b-versatile"
+        "GROQ_MODEL", "openai/gpt-oss-120b"
     )
 
-    return Groq(id=resolved_model_id, api_key=api_key)
+    return Groq(
+        id=resolved_model_id,
+        api_key=api_key,
+        # gpt-oss models "think" before answering; those hidden reasoning
+        # tokens count toward the free-tier TPM limit. "low" cuts them a lot.
+        request_params={"reasoning_effort": "low"},
+        # Hard cap on output so one agent can't eat the whole minute's budget.
+        max_tokens=2500,
+        # Free tier = 8K tokens/minute. On a 429, wait for the window to
+        # reset instead of failing the agent.
+        retries=4,
+        delay_between_retries=12,
+        exponential_backoff=False,
+    )
+
+
+def get_light_model(api_key: str | None):
+    """Second, cheaper model for the simpler agents.
+
+    Groq rate limits are tracked PER MODEL, so spreading agents across two
+    models gives you two separate 8K-TPM budgets on the free tier.
+    """
+    light_id = current_app.config.get("GROQ_LIGHT_MODEL", "openai/gpt-oss-20b")
+    return get_groq_model(api_key, model_id=light_id)

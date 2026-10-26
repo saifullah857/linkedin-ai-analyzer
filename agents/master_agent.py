@@ -73,6 +73,7 @@ def run_full_analysis(
     linkedin_data: dict,
     posts: list | None = None,
     target_role: str = "",
+    light_model=None,
 ) -> dict:
     """Coordinate all nine specialist agents and assemble the final report.
 
@@ -90,6 +91,8 @@ def run_full_analysis(
         overall_score and a per-agent scores breakdown.
     """
     posts = posts or []
+    # Simpler agents use the lighter model (separate rate-limit bucket).
+    light = light_model or model
 
     # 1 & 2: run the two foundational agents first -- everything else
     # (comparison, ats, career, recruiter) depends on their output.
@@ -114,15 +117,15 @@ def run_full_analysis(
     )
     keywords = _safe_run(
         "Keyword Optimizer Agent", run_keyword_analysis,
-        model, resume_text, linkedin_data,
+        light, resume_text, linkedin_data,
     )
     recruiter = _safe_run(
         "Recruiter Agent", run_recruiter_analysis,
-        model, resume_extracted, resume_scores, profile_scores,
+        light, resume_extracted, resume_scores, profile_scores,
     )
     content_analysis = _safe_run(
         "Content Analyzer Agent", run_content_analysis,
-        model, posts,
+        light, posts,
     )
 
     all_results = {
@@ -138,7 +141,7 @@ def run_full_analysis(
 
     # 9: the Report Generator Agent reads everything above and writes
     # the executive summary / prioritized action list.
-    final_report = _safe_run("Report Generator Agent", run_report_generation, model, all_results)
+    final_report = _safe_run("Report Generator Agent", run_report_generation, light, all_results)
     all_results["final_report"] = final_report
 
     # Deterministic scoring (no LLM call) via ReportTool, so the

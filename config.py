@@ -80,7 +80,10 @@ class Config:
     RATE_LIMIT_DEFAULT = os.getenv("RATE_LIMIT_DEFAULT", "100 per hour")
 
     # --- Groq model defaults (the KEY is user-supplied, the model name is not secret) ---
-    GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+    # Used for the simpler agents (keyword, recruiter, content, report).
+    # Separate model = separate free-tier rate-limit bucket.
+    GROQ_LIGHT_MODEL = os.getenv("GROQ_LIGHT_MODEL", "openai/gpt-oss-20b")
     GROQ_API_BASE = "https://api.groq.com/openai/v1"
 
 

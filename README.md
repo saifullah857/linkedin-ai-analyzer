@@ -271,7 +271,7 @@ Visit **http://localhost:5000**, drop in a free [Groq API key](https://console.g
 | `SECRET_KEY` | ✅ | — | Flask session signing key |
 | `FLASK_ENV` | ❌ | `development` | `development` \| `production` |
 | `DATABASE_URL` | ❌ | absolute `instance/database/app.db` | Only override for Postgres/MySQL |
-| `GROQ_MODEL` | ❌ | `llama-3.3-70b-versatile` | Any Groq-hosted model ID |
+| `GROQ_MODEL` | ❌ | `openai/gpt-oss-120b` | Any Groq-hosted model ID |
 | `RATE_LIMIT_DEFAULT` | ❌ | `100 per hour` | Global Flask-Limiter default |
 
 > **The Groq API key is never an env var.** Every user supplies their own through the UI — it lives only in the server-side session for that browser session.

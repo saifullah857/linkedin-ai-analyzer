@@ -40,7 +40,7 @@ from models import db
 from models.report import AnalysisReport, ResumeRecord
 from models.user import User
 from tools.pdf_tool import PDFTool
-from services.groq_client import get_groq_model, MissingGroqKeyError
+from services.groq_client import get_groq_model, get_light_model, MissingGroqKeyError
 from services.pdf_report import build_pdf_report
 from agents.master_agent import run_full_analysis
 
@@ -253,12 +253,16 @@ def register_routes(app: Flask) -> None:
 
         try:
             model = get_groq_model(session.get("groq_api_key"))
+            light_model = get_light_model(session.get("groq_api_key"))
         except MissingGroqKeyError as exc:
             flash(str(exc), "danger")
             return redirect(url_for("analyze"))
 
         try:
-            results = run_full_analysis(model, resume_text, linkedin_data, posts=posts, target_role=target_role)
+            results = run_full_analysis(
+                model, resume_text, linkedin_data, posts=posts,
+                target_role=target_role, light_model=light_model,
+            )
         except Exception as exc:  # noqa: BLE001
             current_app.logger.exception("Agent run failed")
             flash(f"Analysis failed: {exc}", "danger")
